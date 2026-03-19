@@ -9,6 +9,9 @@
  *
  * NOTE: Listed actions are stubs. Wire real SDK calls in adapter.ts once
  * COMPOSIO_ENABLED=true and the SDK package is installed.
+ *
+ * First integration target: Notion (pages and databases, read before write).
+ * Gmail, Google Calendar, and Google Drive are planned follow-on targets.
  */
 
 export interface ComposioProvider {
@@ -20,6 +23,25 @@ export interface ComposioProvider {
 }
 
 const REGISTRY: readonly ComposioProvider[] = [
+  // ── First integration target ──────────────────────────────────────────────
+  {
+    id: 'notion',
+    displayName: 'Notion',
+    // Action IDs follow Composio's naming convention (PROVIDER_VERB_NOUN).
+    // These are the planned scaffolded actions — not yet wired to the SDK.
+    actions: [
+      // Read / search (no approval required)
+      'NOTION_SEARCH',
+      'NOTION_GET_PAGE',
+      'NOTION_GET_DATABASE',
+      'NOTION_QUERY_DATABASE',
+      // Write (approval required)
+      'NOTION_CREATE_PAGE',
+      'NOTION_UPDATE_PAGE',
+    ],
+  },
+
+  // ── Planned follow-on targets ─────────────────────────────────────────────
   {
     id: 'gmail',
     displayName: 'Gmail',

@@ -31,6 +31,36 @@ Composio is the intended bridge for those actions.
 - Prefer a small number of explicit, high-value integrations first.
 - Write actions default to requiring approval (COMPOSIO_REQUIRE_APPROVAL=true).
 
+## First integration target: Notion
+
+Notion is the first provider this system is being built to support.
+It is the canonical example across the registry, policy, config, and adapter.
+
+Rationale:
+- Notion is already the primary workspace/knowledge base in use.
+- Read actions (search, get page, query database) are low-risk and immediately
+  useful for agents that need to look up context.
+- Write actions (create page, update page) are higher-risk and default to
+  requiring approval, matching the conservative default posture.
+
+Planned action coverage:
+
+| Action | Category | Approval |
+|---|---|---|
+| `NOTION_SEARCH` | read | no |
+| `NOTION_GET_PAGE` | read | no |
+| `NOTION_GET_DATABASE` | read | no |
+| `NOTION_QUERY_DATABASE` | read | no |
+| `NOTION_CREATE_PAGE` | write | yes |
+| `NOTION_UPDATE_PAGE` | write | yes |
+
+**None of these are wired yet.** This is honest scaffolding.
+The connected account ID goes in `COMPOSIO_NOTION_CONNECTED_ACCOUNT_ID`
+once the Notion integration is set up in the Composio dashboard.
+
+Follow-on targets (planned, not yet scaffolded): Gmail, Google Calendar,
+Google Drive.
+
 ---
 
 ## Current implementation state (as of add-composio branch)
@@ -39,12 +69,12 @@ Composio is the intended bridge for those actions.
 
 | File | Purpose |
 |---|---|
-| `src/lib/composio-config.ts` | Typed server-side accessors for all Composio env vars (`getComposioConfig`, `isComposioEnabled`, `assertComposioReady`). |
-| `src/lib/composio-policy.ts` | Role allowlist + per-action policies. `canInvokeAction(role, action)` is the main gate. |
-| `src/lib/composio/registry.ts` | Static provider/action manifest (Gmail, Google Calendar, Google Drive). Central place for known action IDs. |
+| `src/lib/composio-config.ts` | Typed server-side accessors for all Composio env vars (`getComposioConfig`, `isComposioEnabled`, `assertComposioReady`). Includes `notionConnectedAccountId` for the first integration target. |
+| `src/lib/composio-policy.ts` | Role allowlist + per-action policies. `canInvokeAction(role, action)` is the main gate. Notion actions are listed first. |
+| `src/lib/composio/registry.ts` | Static provider/action manifest. Notion is the first registered provider; Gmail, Google Calendar, Google Drive are planned follow-ons. |
 | `src/lib/composio/adapter.ts` | Invocation interface + stub `invokeComposioAction()` + `auditComposioInvocation()` placeholder. |
-| `src/lib/composio-policy.test.ts` | Unit tests for all policy gates (node:test, no external test framework). |
-| `.env.example` | `COMPOSIO_ENABLED`, `COMPOSIO_API_KEY`, `COMPOSIO_BASE_URL`, `COMPOSIO_CONNECTED_ACCOUNT_ID`, `COMPOSIO_REQUIRE_APPROVAL` documented. |
+| `src/lib/composio-policy.test.ts` | Unit tests for all policy gates (node:test, no external test framework). Includes Notion-specific tests. |
+| `.env.example` | `COMPOSIO_ENABLED`, `COMPOSIO_API_KEY`, `COMPOSIO_BASE_URL`, `COMPOSIO_CONNECTED_ACCOUNT_ID`, `COMPOSIO_NOTION_CONNECTED_ACCOUNT_ID`, `COMPOSIO_REQUIRE_APPROVAL` documented. |
 
 ### What is stubbed / not yet production-ready
 
@@ -74,6 +104,19 @@ at the top level.
 
 ### Per-action policies (current)
 
+**Notion (first integration target)**
+
+| Action | Provider | Allowed roles | Requires approval |
+|---|---|---|---|
+| `NOTION_SEARCH` | notion | master, senior, scout | no |
+| `NOTION_GET_PAGE` | notion | master, senior, scout | no |
+| `NOTION_GET_DATABASE` | notion | master, senior, scout | no |
+| `NOTION_QUERY_DATABASE` | notion | master, senior, scout | no |
+| `NOTION_CREATE_PAGE` | notion | master | yes |
+| `NOTION_UPDATE_PAGE` | notion | master | yes |
+
+**Planned follow-on providers**
+
 | Action | Provider | Allowed roles | Requires approval |
 |---|---|---|---|
 | `GMAIL_SEND_EMAIL` | gmail | master | yes |
@@ -87,18 +130,21 @@ at the top level.
 
 ## Remaining implementation steps
 
-1. **Wire the SDK**: `npm install composio-core`, then implement
+1. **Connect Notion in Composio dashboard**: Create the Notion integration,
+   obtain the connected account ID, set `COMPOSIO_NOTION_CONNECTED_ACCOUNT_ID`.
+2. **Wire the SDK**: `npm install composio-core`, then implement
    `invokeComposioAction()` in `src/lib/composio/adapter.ts`.
-2. **Persist audit events**: Replace `console.log` in `auditComposioInvocation()`
+3. **Persist audit events**: Replace `console.log` in `auditComposioInvocation()`
    with an INSERT into the `events` table (follow `auditBoardOverride` pattern).
-3. **Build an approval flow**: When `actionRequiresApproval(action)` is true,
+4. **Build an approval flow**: When `actionRequiresApproval(action)` is true,
    queue the request for Sam review rather than dispatching immediately.
-4. **Expose an API route**: Add a Mission Control API endpoint (e.g.
+5. **Expose an API route**: Add a Mission Control API endpoint (e.g.
    `POST /api/composio/invoke`) that agents can call, protected by
    `canInvokeAction` and the approval gate.
-5. **Test one real integration end-to-end**: Gmail FETCH is the lowest-risk
-   first target (read-only, no approval needed for master/senior/scout).
-6. **Log back to Mission Control**: After a Composio action completes,
+6. **Test one real integration end-to-end**: `NOTION_SEARCH` or `NOTION_GET_PAGE`
+   are the lowest-risk first targets (read-only, no approval needed for
+   master/senior/scout).
+7. **Log back to Mission Control**: After a Composio action completes,
    call `logActivity()` from `orchestration.ts` to surface it in the task feed.
 
 ---

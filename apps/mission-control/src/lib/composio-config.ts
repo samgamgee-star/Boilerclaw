@@ -15,8 +15,14 @@ export interface ComposioConfig {
   apiKey: string | null;
   /** Composio API base URL. Defaults to the public Composio backend. */
   baseUrl: string;
-  /** Optional connected-account / workspace reference used as a default. */
+  /** Optional generic connected-account / workspace reference used as a default. */
   connectedAccountId: string | null;
+  /**
+   * Notion-specific connected account ID (first integration target).
+   * Maps to the Composio connected account for the Notion OAuth connection.
+   * Leave null until the Notion integration is set up in the Composio dashboard.
+   */
+  notionConnectedAccountId: string | null;
   /** When true, Sam must explicitly approve before any write action is dispatched. */
   requireApproval: boolean;
 }
@@ -33,6 +39,7 @@ export function getComposioConfig(): ComposioConfig {
     apiKey: process.env.COMPOSIO_API_KEY || null,
     baseUrl: process.env.COMPOSIO_BASE_URL || COMPOSIO_DEFAULT_BASE_URL,
     connectedAccountId: process.env.COMPOSIO_CONNECTED_ACCOUNT_ID || null,
+    notionConnectedAccountId: process.env.COMPOSIO_NOTION_CONNECTED_ACCOUNT_ID || null,
     requireApproval: process.env.COMPOSIO_REQUIRE_APPROVAL !== 'false', // default: true
   };
 }

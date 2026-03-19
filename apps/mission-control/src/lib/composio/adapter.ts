@@ -14,9 +14,9 @@
  */
 
 export interface ComposioActionInput {
-  /** Provider slug, e.g. 'gmail'. */
+  /** Provider slug, e.g. 'notion'. */
   provider: string;
-  /** Composio action ID, e.g. 'GMAIL_SEND_EMAIL'. */
+  /** Composio action ID, e.g. 'NOTION_GET_PAGE'. */
   action: string;
   /** Action parameters — shape depends on the action. */
   params: Record<string, unknown>;

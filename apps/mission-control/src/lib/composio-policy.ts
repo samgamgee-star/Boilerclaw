@@ -55,10 +55,50 @@ export const COMPOSIO_ALLOWED_ROLES: ReadonlySet<AgentRole> = new Set([
 /**
  * Per-action policies.
  * An action not listed here is denied to all roles.
- * Extend this list as real integrations are wired.
+ * Notion is the first integration target; Gmail / Calendar / Drive are planned.
  */
 export const ACTION_POLICIES: readonly ActionPolicy[] = [
-  // Gmail
+  // ── Notion (first integration target) ─────────────────────────────────────
+  // Read actions: master, senior, and scout may invoke without approval.
+  {
+    action: 'NOTION_SEARCH',
+    provider: 'notion',
+    allowedRoles: new Set(['master', 'senior', 'scout']),
+    requiresApproval: false,
+  },
+  {
+    action: 'NOTION_GET_PAGE',
+    provider: 'notion',
+    allowedRoles: new Set(['master', 'senior', 'scout']),
+    requiresApproval: false,
+  },
+  {
+    action: 'NOTION_GET_DATABASE',
+    provider: 'notion',
+    allowedRoles: new Set(['master', 'senior', 'scout']),
+    requiresApproval: false,
+  },
+  {
+    action: 'NOTION_QUERY_DATABASE',
+    provider: 'notion',
+    allowedRoles: new Set(['master', 'senior', 'scout']),
+    requiresApproval: false,
+  },
+  // Write actions: master only, explicit approval required.
+  {
+    action: 'NOTION_CREATE_PAGE',
+    provider: 'notion',
+    allowedRoles: new Set(['master']),
+    requiresApproval: true,
+  },
+  {
+    action: 'NOTION_UPDATE_PAGE',
+    provider: 'notion',
+    allowedRoles: new Set(['master']),
+    requiresApproval: true,
+  },
+
+  // ── Gmail (planned) ────────────────────────────────────────────────────────
   {
     action: 'GMAIL_SEND_EMAIL',
     provider: 'gmail',
@@ -72,7 +112,7 @@ export const ACTION_POLICIES: readonly ActionPolicy[] = [
     requiresApproval: false,
   },
 
-  // Google Calendar
+  // ── Google Calendar (planned) ──────────────────────────────────────────────
   {
     action: 'GOOGLECALENDAR_CREATE_EVENT',
     provider: 'googlecalendar',
@@ -86,7 +126,7 @@ export const ACTION_POLICIES: readonly ActionPolicy[] = [
     requiresApproval: false,
   },
 
-  // Google Drive
+  // ── Google Drive (planned) ─────────────────────────────────────────────────
   {
     action: 'GOOGLEDRIVE_UPLOAD_FILE',
     provider: 'googledrive',
