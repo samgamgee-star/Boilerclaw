@@ -2,6 +2,17 @@
 
 Boilerclaw is an umbrella repo for the current OpenClaw + Mission Control operating setup.
 
+## What this repo is
+
+Boilerclaw is the working system repo for:
+- agent operating docs
+- Mission Control orchestration logic
+- task role defaults
+- project-to-execution workflow design
+- capability-layer planning, including Composio
+
+It is meant to be the clean, versioned home for how the stack works as a whole.
+
 ## Included
 
 - `agents/sam/` — Sam's orchestrator workspace, planning docs, memory, and Mission Control routing notes
@@ -26,3 +37,4 @@ Default role policy currently maps by primary owner agent:
 
 This repo is a clean snapshot/export of the current working system, not a literal mirror of every local runtime artifact.
 Runtime caches, databases, logs, and auth files are intentionally excluded.
+atabases, logs, and auth files are intentionally excluded.

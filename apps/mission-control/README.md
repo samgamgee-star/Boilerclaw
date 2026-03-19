@@ -124,6 +124,18 @@ By default, your task/project data stays in your own deployment (SQLite + worksp
 
 ### Install
 
+### Optional capability layer: Composio
+
+The current Boilerclaw direction treats Composio as the external-actions layer for third-party SaaS integrations.
+This repo now includes placeholder environment/config fields for that capability, but not a full production Composio wiring layer yet.
+
+Planned use cases include:
+- Google Workspace
+- Gmail
+- Calendar
+- CRM/support tools
+
+
 ```bash
 # Clone
 git clone https://github.com/crshdn/mission-control.git
