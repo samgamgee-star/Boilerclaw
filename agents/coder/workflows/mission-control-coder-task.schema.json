@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openclaw.local/schemas/mission-control-coder-task.json",
+  "title": "Mission Control Coder Task",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "ownerAgent",
+    "taskType",
+    "complexity",
+    "priority",
+    "status",
+    "primaryMode",
+    "needsReview",
+    "needsQA",
+    "project",
+    "context",
+    "expectedOutput",
+    "acceptanceCriteria"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 5
+    },
+    "ownerAgent": {
+      "type": "string",
+      "enum": ["coder"]
+    },
+    "assignee": {
+      "type": "string",
+      "default": "coder"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "taskType": {
+      "type": "string",
+      "enum": ["feature", "bug", "refactor", "review", "qa", "spike"]
+    },
+    "complexity": {
+      "type": "string",
+      "enum": ["quick", "medium", "deep"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "normal", "high", "urgent"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["backlog", "ready", "building", "review", "qa", "done", "blocked", "canceled"]
+    },
+    "primaryMode": {
+      "type": "string",
+      "enum": ["builder", "frontend", "backend"]
+    },
+    "needsReview": {
+      "type": "boolean"
+    },
+    "needsQA": {
+      "type": "boolean"
+    },
+    "needsSecurityReview": {
+      "type": "boolean",
+      "default": false
+    },
+    "context": {
+      "type": "string",
+      "minLength": 10
+    },
+    "problem": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "expectedOutput": {
+      "type": "string",
+      "minLength": 10
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "writeTarget": {
+      "type": "string"
+    },
+    "blockedBy": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "notes": {
+      "type": "string"
+    },
+    "implementationSummary": {
+      "type": "string"
+    },
+    "reviewFindings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "qaFindings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "securityFindings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "finalDecision": {
+      "type": "string",
+      "enum": ["approved", "changes_requested", "failed", "done"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "review" }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "needsReview": { "const": true }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "qa" }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "needsQA": { "const": true }
+        }
+      }
+    }
+  ]
+}
