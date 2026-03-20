@@ -14,6 +14,7 @@
     "db:reset": "rm -f mission-control.db mission-control.db-* && npm run db:seed"
   },
   "dependencies": {
+    "@composio/core": "^0.6.5",
     "@hello-pangea/dnd": "^17.0.0",
     "better-sqlite3": "^12.6.2",
     "clsx": "^2.1.1",
